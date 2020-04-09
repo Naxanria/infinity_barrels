@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="[31,)"
+#issueTrackerURL="http://my.issue.tracker/" #optional
+
+[[mods]]
+modId="infinity_barrels"
+version="${file.jarVersion}"
+displayName="Infinity Barrels"
+authors="Naxanria"
+description='''
+Adds infinity barrels. Barrels that contain infinite amount of items.
+'''
+# A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
+[[dependencies.infinity_barrels]]
+    modId="forge"
+    mandatory=true
+    versionRange="[31,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.infinity_barrels]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15.2]"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.infinity_barrels]]
+    modId="wtbw_lib"
+    mandatory=true
+    versionRange="[1.0.17,)"
+    ordering="NONE"
+    side="BOTH"

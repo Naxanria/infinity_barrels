@@ -1,0 +1,10 @@
+{
+  "parent": "block/orientable",
+  "textures": {
+    "back": "infinity_barrels:block/barrel_back",
+    "front": "infinity_barrels:block/barrel_front",
+    "side": "infinity_barrels:block/barrel_side",
+    "down": "infinity_barrels:block/barrel_side",
+    "up": "infinity_barrels:block/barrel_side"
+  }
+}

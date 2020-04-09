@@ -1,0 +1,19 @@
+{
+  "type": "infinity_barrels:barrel",
+  "pattern": [
+    "III",
+    "IEI",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:gems/diamond"
+    },
+    "E": {
+      "tag": "forge:nether_stars"
+    }
+  },
+  "result": {
+    "item": "minecraft:diamond"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "infinity_barrels:barrel",
+  "pattern": [
+    "III",
+    "IBI",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "B": {
+      "tag": "forge:storage_blocks/iron"
+    }
+  },
+  "result": {
+    "item": "minecraft:iron_ingot"
+  }
+}
