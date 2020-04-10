@@ -36,11 +36,12 @@ public class BarrelRenderer extends TileEntityRenderer<BarrelTile>
   
   private static class BarrelModel extends Model
   {
-    private final Cache<ModelRenderer> model = Cache.create(this::createModel);
+    private final ModelRenderer model;
     
     public BarrelModel()
     {
       super(RenderType::getEntitySolid);
+      model = createModel();
     }
     
     private ModelRenderer createModel()
@@ -53,22 +54,8 @@ public class BarrelRenderer extends TileEntityRenderer<BarrelTile>
     @Override
     public void render(MatrixStack matrixStack, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
     {
-      model.get().render(matrixStack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+      model.render(matrixStack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
-    
-    public void invalidate()
-    {
-      model.invalidate();
-    }
-    
-    BarrelModel setTextureSize(int w, int h)
-    {
-      textureWidth = w;
-      textureHeight = h;
-      model.get().setTextureSize(textureWidth, textureHeight);
-      return this;
-    }
-    
   }
   
   private final BarrelModel model;
@@ -78,7 +65,7 @@ public class BarrelRenderer extends TileEntityRenderer<BarrelTile>
     super(rendererDispatcherIn);
     model = new BarrelModel();
   }
-  int iteration = 0;
+
   @Override
   public void render(BarrelTile barrel, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay)
   {
@@ -105,12 +92,6 @@ public class BarrelRenderer extends TileEntityRenderer<BarrelTile>
     
     // render model
     IVertexBuilder builder = TEXTURE.getBuffer(buffer, RenderType::getEntityCutout);
-    
-    if (iteration < 0)
-    {
-      model.invalidate();
-      iteration++;
-    }
     
     model.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, 1f);
     
