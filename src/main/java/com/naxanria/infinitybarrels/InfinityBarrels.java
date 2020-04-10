@@ -10,7 +10,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -36,8 +38,9 @@ public class InfinityBarrels
   {
     Registrator registrator = new Registrator(GROUP, MODID);
     FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(IRecipeSerializer.class, registrator::registerRecipes);
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::setup);
-//    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onServerStarting);
+  
+    DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ClientSetup.init());
+    
     MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
     
     Config.init();
