@@ -2,9 +2,11 @@ package com.naxanria.infinitybarrels.tile;
 
 import com.naxanria.infinitybarrels.config.Config;
 import com.naxanria.infinitybarrels.init.ModTiles;
+
 import com.wtbw.mods.lib.util.Utilities;
 import com.wtbw.mods.lib.util.nbt.Manager;
 import com.wtbw.mods.lib.util.nbt.NBTManager;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
@@ -15,7 +17,8 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.Vec3d;
+
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -117,9 +120,9 @@ public class BarrelTile extends TileEntity
   }
   
   @Override
-  public void read(CompoundNBT compound)
+  public void read(BlockState state, CompoundNBT compound)
   {
-    super.read(compound);
+    super.read(state, compound);
     manager.read(compound);
   }
   
@@ -148,9 +151,9 @@ public class BarrelTile extends TileEntity
   }
   
   @Override
-  public void handleUpdateTag(CompoundNBT tag)
+  public void handleUpdateTag(BlockState state, CompoundNBT tag)
   {
-    read(tag);
+    read(state, tag);
   }
   
   @Override
@@ -185,7 +188,7 @@ public class BarrelTile extends TileEntity
       ItemStack stack;
       if (!player.inventory.addItemStackToInventory(stack = getItem()))
       {
-        Vec3d dropPos = Utilities.getVec3d(pos).add(0.5, 1.2, 0.5);
+        Vector3d dropPos = Utilities.getVector3d(pos).add(0.5, 1.2, 0.5);
         InventoryHelper.spawnItemStack(world, dropPos.x, dropPos.y, dropPos.z, stack);
       }
     }

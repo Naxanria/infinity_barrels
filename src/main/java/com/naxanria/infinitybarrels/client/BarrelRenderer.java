@@ -6,7 +6,6 @@ import com.naxanria.infinitybarrels.InfinityBarrels;
 import com.naxanria.infinitybarrels.block.BarrelBlock;
 import com.naxanria.infinitybarrels.init.ModBlocks;
 import com.naxanria.infinitybarrels.tile.BarrelTile;
-import com.wtbw.mods.lib.util.Cache;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,17 +13,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Atlases;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.Material;
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 
 /*
@@ -32,7 +30,7 @@ import net.minecraft.world.World;
 */
 public class BarrelRenderer extends TileEntityRenderer<BarrelTile>
 {
-  public static final Material TEXTURE = new Material(Atlases.CHEST_ATLAS, new ResourceLocation(InfinityBarrels.MODID, "entity/barrel"));
+  public static final RenderMaterial TEXTURE = new RenderMaterial(Atlases.CHEST_ATLAS, new ResourceLocation(InfinityBarrels.MODID, "entity/barrel"));
   
   private static class BarrelModel extends Model
   {

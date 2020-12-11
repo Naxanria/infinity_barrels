@@ -82,7 +82,7 @@ dependencies {
         compile project(":wtbw_lib")
     }
     else {
-        compile fg.deobf (project.dependencies.create("com.wtbw.mods:wtbw_lib-1.15.2:${wtbwlib_version}") {
+        compile fg.deobf (project.dependencies.create("com.wtbw.mods:wtbw_lib-1.16.3:${wtbwlib_version}") {
             transitive = false
         })
     }

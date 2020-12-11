@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -46,9 +47,8 @@ public class InfinityBarrels
     Config.init();
   }
   
-  public void onServerStarting(final FMLServerStartingEvent event)
+  public void onServerStarting(final RegisterCommandsEvent event)
   {
-    LOGGER.info("Server starting?");
-    new IBCommands(event.getCommandDispatcher());
+    new IBCommands(event.getDispatcher());
   }
 }

@@ -20,7 +20,9 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -71,7 +73,10 @@ public class BarrelBlock extends SixWayTileBlock<BarrelTile>
       if (tag.contains("item"))
       {
         ItemStack item = ItemStack.read(tag.getCompound("item"));
-        tooltip.add(item.getDisplayName().applyTextStyle(TextFormatting.AQUA));
+        ITextComponent displayName = item.getDisplayName();
+        Style style = displayName.getStyle();
+        style.setColor(Color.func_240744_a_(TextFormatting.AQUA));
+        tooltip.add(displayName);
       }
     }
     

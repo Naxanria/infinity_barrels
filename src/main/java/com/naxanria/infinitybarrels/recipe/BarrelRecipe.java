@@ -225,7 +225,8 @@ public class BarrelRecipe extends ShapedRecipe
   public static ItemStack deserializeItem(JsonObject p_199798_0_)
   {
     String s = JSONUtils.getString(p_199798_0_, "item");
-    Item item = Registry.ITEM.getValue(new ResourceLocation(s)).orElseThrow(() ->
+    
+    Item item = Registry.ITEM.func_241873_b(new ResourceLocation(s)).orElseThrow(() ->
     {
       return new JsonSyntaxException("Unknown item '" + s + "'");
     });
