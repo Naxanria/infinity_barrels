@@ -20,10 +20,14 @@ import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /*
   @author: Naxanria
@@ -31,6 +35,53 @@ import net.minecraft.world.World;
 public class BarrelRenderer extends TileEntityRenderer<BarrelTile>
 {
   public static final RenderMaterial TEXTURE = new RenderMaterial(Atlases.CHEST_ATLAS, new ResourceLocation(InfinityBarrels.MODID, "entity/barrel"));
+  public static final Map<Integer, OffsetData> offsetData = new HashMap<>();
+  
+  public static final OffsetData IDENTITY = new OffsetData(1);
+  
+  public static class OffsetData
+  {
+    public final float x;
+    public final float y;
+    public final float z;
+    public final float scale;
+  
+    public OffsetData(float scale)
+    {
+      x = 0;
+      y = 0;
+      z = 0;
+      this.scale = scale;
+    }
+  
+    public OffsetData(float x, float y, float z)
+    {
+      this.x = x;
+      this.y = y;
+      this.z = z;
+      scale = 1;
+    }
+  
+    public OffsetData(float x, float y, float z, float scale)
+    {
+      this.x = x;
+      this.y = y;
+      this.z = z;
+      this.scale = scale;
+    }
+  }
+  
+  public static void addOffset(String location, OffsetData data)
+  {
+    int hash = location.hashCode();
+    offsetData.put(hash, data);
+  }
+  
+  public static OffsetData getOffset(ResourceLocation location)
+  {
+    int hash = location.toString().hashCode();
+    return offsetData.getOrDefault(hash, IDENTITY);
+  }
   
   private static class BarrelModel extends Model
   {
@@ -94,27 +145,30 @@ public class BarrelRenderer extends TileEntityRenderer<BarrelTile>
     model.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, 1f);
     
     // render item in front
-    if (!barrel.getItem().isEmpty())
+    ItemStack item = barrel.getItem();
+    if (!item.isEmpty())
     {
       matrixStack.push();
-  
-      Block block = Block.getBlockFromItem(barrel.getItem().getItem());
-      if (block == Blocks.AIR)
+      
+      Block block = Block.getBlockFromItem(item.getItem());
+      if (block != Blocks.AIR)
       {
-        matrixStack.translate(.5, .5, 1.025);
+        OffsetData offset = getOffset(block.getRegistryName());
+        matrixStack.translate(.5 + offset.x, .5 + offset.y, 1.025 + offset.z);
         matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
         float scale = .7f;
-        matrixStack.scale(scale, scale, scale);
+        matrixStack.scale(scale * offset.scale, scale * offset.scale, scale * offset.scale);
       }
       else
       {
-        matrixStack.translate(.5, .5, .9);
+        OffsetData offset = getOffset(item.getItem().getRegistryName());
+        matrixStack.translate(.5 + offset.x, .5 + offset.y, 1.025 + offset.z);
         matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
         float scale = .8f;
-        matrixStack.scale(scale, scale, scale);
+        matrixStack.scale(scale * offset.scale, scale * offset.scale, scale * offset.scale);
       }
   
-      Minecraft.getInstance().getItemRenderer().renderItem(barrel.getItem(), ItemCameraTransforms.TransformType.FIXED, combinedLight,
+      Minecraft.getInstance().getItemRenderer().renderItem(item, ItemCameraTransforms.TransformType.FIXED, combinedLight,
         OverlayTexture.NO_OVERLAY, matrixStack, buffer);
       
       matrixStack.pop();
