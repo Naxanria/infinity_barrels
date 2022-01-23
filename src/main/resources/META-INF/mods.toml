@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[34,)"
+loaderVersion="[39,)"
 license="All Rights Reserved"
 #issueTrackerURL="http://my.issue.tracker/" #optional
 
@@ -15,18 +15,12 @@ Adds infinity barrels. Barrels that contain infinite amount of items.
 [[dependencies.infinity_barrels]]
     modId="forge"
     mandatory=true
-    versionRange="[34,)"
+    versionRange="[39,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.infinity_barrels]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3,)"
-    ordering="NONE"
-    side="BOTH"
-[[dependencies.infinity_barrels]]
-    modId="wtbw_lib"
-    mandatory=true
-    versionRange="[2.0.0,)"
+    versionRange="[1.18.1,)"
     ordering="NONE"
     side="BOTH"

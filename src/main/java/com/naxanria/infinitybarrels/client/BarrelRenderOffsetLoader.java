@@ -5,57 +5,59 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.naxanria.infinitybarrels.InfinityBarrels;
-import net.minecraft.client.resources.JsonReloadListener;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.mutable.MutableInt;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraftforge.event.AddReloadListenerEvent;
 
 import java.util.Map;
 
 /*
   @author: Naxanria
 */
-public class BarrelRenderOffsetLoader extends JsonReloadListener
+public class BarrelRenderOffsetLoader extends SimpleJsonResourceReloadListener
 {
-  private static final Gson gson = new GsonBuilder().create();
-  private static final String name = "barrel_offsets";
+  public static void onAddReloadListener(final AddReloadListenerEvent event)
+  {
+    event.addListener(new BarrelRenderOffsetLoader());
+  }
+  
+  private static final Gson GSON = new GsonBuilder().create();
+  private static final String NAME = "barrel_offsets";
   
   public BarrelRenderOffsetLoader()
   {
-    super(gson, name);
+    super(GSON, NAME);
   }
   
   @Override
-  protected void apply(Map<ResourceLocation, JsonElement> objectIn, IResourceManager resourceManagerIn, IProfiler profilerIn)
+  protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler)
   {
-    MutableInt mint = new MutableInt();
-    objectIn.forEach((location, element) ->
+    map.forEach((location, element) ->
     {
       if (element.isJsonObject())
       {
-        JsonObject object = element.getAsJsonObject();
+        JsonObject json = element.getAsJsonObject();
   
         BarrelRenderer.offsetData.clear();
-        
-        if (!object.has("id"))
+  
+        if (!json.has("id"))
         {
           InfinityBarrels.LOGGER.error("no 'id' specified for offset in {}", location);
         }
         else
         {
-          String id = JSONUtils.getString(object, "id", "UNKNOWN");
-          float x = JSONUtils.getFloat(object, "x", 0);
-          float y = JSONUtils.getFloat(object, "y", 0);
-          float z = JSONUtils.getFloat(object, "z", 0);
-          float scale = JSONUtils.getFloat(object, "scale", 1);
+          String id = GsonHelper.getAsString(json, "id", "UNKNOWN");
+          float x = GsonHelper.getAsFloat(json, "x", 0);
+          float y = GsonHelper.getAsFloat(json, "y", 0);
+          float z = GsonHelper.getAsFloat(json, "z", 0);
+          float scale = GsonHelper.getAsFloat(json, "scale", 1);
           BarrelRenderer.addOffset(id, new BarrelRenderer.OffsetData(x, y, z, scale));
-          mint.increment();
+  
         }
       }
     });
-    
-    InfinityBarrels.LOGGER.info("Loaded {} offsets", mint.getValue());
   }
 }

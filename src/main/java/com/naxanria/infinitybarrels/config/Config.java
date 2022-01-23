@@ -1,7 +1,6 @@
 package com.naxanria.infinitybarrels.config;
 
 import com.naxanria.infinitybarrels.InfinityBarrels;
-import com.wtbw.mods.lib.config.BaseConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
@@ -10,7 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 /*
   @author: Naxanria
 */
-public class Config extends BaseConfig
+public class Config
 {
   private static Config instance;
   public static Config getInstance()
@@ -30,7 +29,6 @@ public class Config extends BaseConfig
   
   public Config(ForgeConfigSpec.Builder builder)
   {
-    super(InfinityBarrels.MODID, builder);
     instance = this;
     
     stackSize = builder

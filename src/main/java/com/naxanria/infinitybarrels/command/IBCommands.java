@@ -1,24 +1,24 @@
 package com.naxanria.infinitybarrels.command;
 
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.naxanria.infinitybarrels.InfinityBarrels;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+
 
 /*
   @author: Naxanria
 */
 public class IBCommands
 {
-  public IBCommands(CommandDispatcher<CommandSource> dispatcher)
+  public IBCommands(CommandDispatcher<CommandSourceStack> dispatcher)
   {
-    InfinityBarrels.LOGGER.info("Commands here....");
-    dispatcher.register(commands(Commands.literal("ib")));
+    dispatcher.register(commands(Commands.literal( "ib")));
     dispatcher.register(commands(Commands.literal("infinity_barrels")));
   }
   
-  public static LiteralArgumentBuilder<CommandSource> commands(LiteralArgumentBuilder<CommandSource> literal)
+  public static LiteralArgumentBuilder<CommandSourceStack> commands(LiteralArgumentBuilder<CommandSourceStack> literal)
   {
     return literal
       .then(IBGiveCommand.register());

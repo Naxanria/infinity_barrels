@@ -1,3 +1,6 @@
 {
-  "block.infinity_barrels.infinity_barrel": "Infinity Barrel"
+  "block.infinity_barrels.infinity_barrel": "Infinity Barrel",
+  "item.infinity_barrels.barrel_wrench": "Barrel Wrench",
+  "infinity_barrels.desc.barrel_wrench": "Used to pick up barrels",
+  "infinity_barrels.gui.failed_enter_inventory": "No room in your inventory!"
 }

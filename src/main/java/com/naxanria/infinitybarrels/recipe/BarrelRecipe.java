@@ -5,20 +5,20 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.*;
 import com.naxanria.infinitybarrels.InfinityBarrels;
-import com.naxanria.infinitybarrels.init.ModBlocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
+import com.naxanria.infinitybarrels.registry.ModBlocks;
+import net.minecraft.Util;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
@@ -29,16 +29,17 @@ import java.util.Set;
 public class BarrelRecipe extends ShapedRecipe
 {
   public static final BarrelSerializer SERIALIZER = new BarrelSerializer();
+  public static final String NAME = "barrel";
   private static final int MAX_HEIGHT = 3;
   private static final int MAX_WIDTH = 3;
   
   public BarrelRecipe(ResourceLocation id, String group, int recipeWidth, int recipeHeight, NonNullList<Ingredient> recipeItems, ItemStack recipeOutput)
   {
     super(id, group, recipeWidth, recipeHeight, recipeItems,
-      Util.make(new ItemStack(ModBlocks.INFINITY_BARREL),
+      Util.make(new ItemStack(ModBlocks.BARREL.get()),
         stack -> {
-          stack.getOrCreateChildTag("BlockEntityTag").put("item", recipeOutput.serializeNBT());
-          stack.getOrCreateChildTag("BlockEntityTag").put("Items", new ListNBT());
+          stack.getOrCreateTagElement("BlockEntityTag").put("item", recipeOutput.serializeNBT());
+//          stack.getOrCreateTagElement("BlockEntityTag").put("Items", new ListNBT());
 //
 //          InfinityBarrels.LOGGER.info("Recipe for {} loading", recipeOutput.getItem().getRegistryName().toString());
 //          CompoundNBT itemNbt = recipeOutput.serializeNBT();
@@ -178,7 +179,7 @@ public class BarrelRecipe extends ShapedRecipe
     {
       for (int i = 0; i < astring.length; ++i)
       {
-        String s = JSONUtils.getString(jsonArr.get(i), "pattern[" + i + "]");
+        String s = GsonHelper.getAsString(jsonArr.get(i).getAsJsonObject(), "pattern[" + i + "]");
         if (s.length() > MAX_WIDTH)
         {
           throw new JsonSyntaxException("Invalid pattern: too many columns, " + MAX_WIDTH + " is maximum");
@@ -215,81 +216,80 @@ public class BarrelRecipe extends ShapedRecipe
         throw new JsonSyntaxException("Invalid key entry: ' ' is a reserved symbol.");
       }
       
-      map.put(entry.getKey(), Ingredient.deserialize(entry.getValue()));
+      map.put(entry.getKey(), Ingredient.fromJson(entry.getValue()));
     }
     
     map.put(" ", Ingredient.EMPTY);
     return map;
   }
   
-  public static ItemStack deserializeItem(JsonObject p_199798_0_)
+  public static ItemStack deserializeItem(JsonObject json)
   {
-    String s = JSONUtils.getString(p_199798_0_, "item");
+    String s = GsonHelper.getAsString(json, "item");
     
-    Item item = Registry.ITEM.func_241873_b(new ResourceLocation(s)).orElseThrow(() ->
+    Item item = Registry.ITEM.getOptional(new ResourceLocation(s)).orElseThrow(() ->
     {
       return new JsonSyntaxException("Unknown item '" + s + "'");
     });
-    if (p_199798_0_.has("data"))
+    if (json.has("data"))
     {
       throw new JsonParseException("Disallowed data tag found");
     }
     else
     {
-      int i = JSONUtils.getInt(p_199798_0_, "count", 1);
-      return net.minecraftforge.common.crafting.CraftingHelper.getItemStack(p_199798_0_, true);
+      int i = GsonHelper.getAsInt(json, "count", 1);
+      return net.minecraftforge.common.crafting.CraftingHelper.getItemStack(json, true);
     }
   }
   
-  public static class BarrelSerializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<BarrelRecipe>
+  public static class BarrelSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<BarrelRecipe>
   {
     public static final ResourceLocation NAME = new ResourceLocation(InfinityBarrels.MODID, "barrel");
   
-    public BarrelSerializer()
+    @Override
+    public BarrelRecipe fromJson(ResourceLocation recipeId, JsonObject json)
     {
-      setRegistryName(NAME);
-    }
-  
-    public BarrelRecipe read(ResourceLocation recipeId, JsonObject json)
-    {
-      String s = JSONUtils.getString(json, "group", "");
-      Map<String, Ingredient> map = BarrelRecipe.deserializeKey(JSONUtils.getJsonObject(json, "key"));
-      String[] astring = BarrelRecipe.shrink(BarrelRecipe.patternFromJson(JSONUtils.getJsonArray(json, "pattern")));
+      String s = GsonHelper.getAsString(json, "group", "");
+      Map<String, Ingredient> map = BarrelRecipe.deserializeKey(GsonHelper.getAsJsonObject(json, "key"));
+      String[] astring = BarrelRecipe.shrink(BarrelRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern")));
       int i = astring[0].length();
       int j = astring.length;
       NonNullList<Ingredient> nonnulllist = BarrelRecipe.deserializeIngredients(astring, map, i, j);
-      ItemStack itemstack = BarrelRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
+      ItemStack itemstack = BarrelRecipe.deserializeItem(GsonHelper.getAsJsonObject(json, "result"));
       return new BarrelRecipe(recipeId, s, i, j, nonnulllist, itemstack);
     }
   
-    public BarrelRecipe read(ResourceLocation recipeId, PacketBuffer buffer)
+    @Nullable
+    @Override
+    public BarrelRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer)
     {
       int i = buffer.readVarInt();
       int j = buffer.readVarInt();
-      String s = buffer.readString(32767);
+      String s = buffer.readUtf();
       NonNullList<Ingredient> nonnulllist = NonNullList.withSize(i * j, Ingredient.EMPTY);
   
       for (int k = 0; k < nonnulllist.size(); ++k)
       {
-        nonnulllist.set(k, Ingredient.read(buffer));
+        nonnulllist.set(k, Ingredient.fromNetwork(buffer));
       }
   
-      ItemStack itemstack = buffer.readItemStack();
+      ItemStack itemstack = buffer.readItem();
       return new BarrelRecipe(recipeId, s, i, j, nonnulllist, itemstack);
     }
   
-    public void write(PacketBuffer buffer, BarrelRecipe recipe)
+    @Override
+    public void toNetwork(FriendlyByteBuf buffer, BarrelRecipe recipe)
     {
       buffer.writeVarInt(recipe.getWidth());
       buffer.writeVarInt(recipe.getHeight());
-      buffer.writeString(recipe.getGroup());
+      buffer.writeUtf(recipe.getGroup());
   
       for (Ingredient ingredient : recipe.getIngredients())
       {
-        ingredient.write(buffer);
+        ingredient.toNetwork(buffer);
       }
   
-      buffer.writeItemStack(recipe.getRecipeOutput());
+      buffer.writeItemStack(recipe.getResultItem(), false);
     }
   }
 }
